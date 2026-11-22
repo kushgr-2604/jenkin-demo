@@ -25,7 +25,7 @@ pipeline {
                     docker rm -f jenkin-demo || true
                     docker run -d \
                       --name jenkin-demo \
-                      -p 127.0.0.1:8081:80 \
+                      -p 8081:80 \
                       jenkin-demo:latest
                 '''
             }
