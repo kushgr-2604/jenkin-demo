@@ -4,18 +4,38 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building GLA Student Portal...'
                 sh 'test -f index.html'
-                echo 'Build completed successfully!'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Testing GLA Student Portal...'
                 sh "grep -qi '<html' index.html"
-                echo 'All tests passed!'
             }
         }
+         stage('Docker Build') {
+            steps {
+                sh 'docker build -t jenkin-demo:latest .'
+            }
+        }
+
+        stage('Docker Deploy') {
+            steps {
+                sh '''
+                    docker rm -f jenkin-demo || true
+                    docker run -d \
+                      --name jenkin-demo \
+                      -p 127.0.0.1:8081:80 \
+                      jenkin-demo:latest
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh 'curl -fsS http://127.0.0.1:8081/'
+            }
+        }
+        
     }
 }
